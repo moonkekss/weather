@@ -5,19 +5,24 @@
   </head>
   <body>
     <h1>Weather Forecast</h1>
-    <form action="/weather" method="get">
-      <input type="text" name="city" placeholder="Enter city name" required />
-      <button type="submit">Get Weather</button>
+    <form action="/forecast" method="get">
+      Enter city name: <input type="text" name="city" />
+      <input type="submit" value="Get Weather" />
     </form>
 
-    <div th:if="${weather != null}">
-      <h2 th:text="${weather.name}">City Name</h2>
-      <p th:text="'Temperature: ' + ${weather.main.temp} + ' °C'">
-        Temperature
-      </p>
-      <p th:each="w : ${weather.weather}" th:text="${w.description}">
-        Description
-      </p>
+    <div th:if="${forecast}">
+      <h2>Forecast for <span th:text="${forecast[0].name}"></span></h2>
+      <ul>
+        <li th:each="forecastItem : ${forecast}">
+          <span th:text="${forecastItem.dt_txt}"></span>:
+          <span th:text="${forecastItem.main.temp}"></span> °C,
+          <span th:text="${forecastItem.weather[0].description}"></span>
+        </li>
+      </ul>
+    </div>
+
+    <div th:if="${error}">
+      <p th:text="${error}"></p>
     </div>
   </body>
 </html>

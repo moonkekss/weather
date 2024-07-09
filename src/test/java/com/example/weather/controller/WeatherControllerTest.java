@@ -1,6 +1,6 @@
 package com.example.weather.controller;
 
-import com.example.weather.model.WeatherResponse;
+import com.example.weather.model.ForecastResponse;
 import com.example.weather.service.WeatherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.List;
 
 class WeatherControllerTest {
 
@@ -51,22 +53,24 @@ class WeatherControllerTest {
     @Test
     void getWeather() throws Exception {
         String city = "London";
-        WeatherResponse mockResponse = new WeatherResponse();
-        WeatherResponse.Main main = new WeatherResponse.Main();
+        ForecastResponse mockResponse = new ForecastResponse();
+        ForecastResponse.Forecast forecast = new ForecastResponse.Forecast();
+        ForecastResponse.Main main = new ForecastResponse.Main();
         main.setTemp(15.0);
-        mockResponse.setMain(main);
-        WeatherResponse.Weather weather = new WeatherResponse.Weather();
+        forecast.setMain(main);
+        ForecastResponse.Weather weather = new ForecastResponse.Weather();
         weather.setDescription("clear sky");
-        mockResponse.setWeather(new WeatherResponse.Weather[] { weather });
+        forecast.setWeather(List.of(weather));
+        mockResponse.setList(List.of(forecast));
 
-        when(weatherService.getWeather(city)).thenReturn(mockResponse);
+        when(weatherService.getWeatherForecast(city)).thenReturn(mockResponse);
 
         String viewName = weatherController.getWeather(city, model);
         assertEquals("index", viewName);
-        verify(model).addAttribute("weather", mockResponse);
+        verify(model).addAttribute("forecast", mockResponse.getList());
 
         // Using mockMvc to test the controller method
-        mockMvc.perform(get("/weather").param("city", city))
+        mockMvc.perform(get("/forecast").param("city", city))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"));
     }
